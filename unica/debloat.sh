@@ -123,8 +123,11 @@ system/app/PlayAutoInstallConfig
 "
 
 # Google
-SYSTEM_DEBLOAT+="
-system_ext/priv-app/GoogleServicesFramework
+SYSTEM_EXT_DEBLOAT+="
+priv-app/GoogleServicesFramework
+"
+PRODUCT_DEBLOAT+="
+priv-app/GoogleServicesFramework
 "
 
 # Language packs
