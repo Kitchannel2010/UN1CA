@@ -122,18 +122,9 @@ SYSTEM_DEBLOAT+="
 system/app/PlayAutoInstallConfig
 "
 
-# HwModuleTest
+# Google
 SYSTEM_DEBLOAT+="
-system/app/Cameralyzer
-system/app/FactoryAirCommandManager
-system/app/FactoryCameraFB
-system/app/HMT
-system/app/WlanTest
-system/etc/default-permissions/default-permissions-com.sec.factory.cameralyzer.xml
-system/etc/permissions/privapp-permissions-com.samsung.android.providers.factory.xml
-system/etc/permissions/privapp-permissions-com.sec.facatfunction.xml
-system/priv-app/FacAtFunction
-system/priv-app/FactoryTestProvider
+system_ext/priv-app/GoogleServicesFramework
 "
 
 # Language packs
