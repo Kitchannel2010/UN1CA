@@ -123,12 +123,12 @@ system/app/PlayAutoInstallConfig
 "
 
 # Google
-SYSTEM_EXT_DEBLOAT+="
-priv-app/GoogleServicesFramework
-"
-PRODUCT_DEBLOAT+="
-priv-app/GoogleServicesFramework
-"
+#SYSTEM_EXT_DEBLOAT+="
+#priv-app/GoogleServicesFramework
+#"
+#PRODUCT_DEBLOAT+="
+#priv-app/GoogleServicesFramework
+#"
 
 # Language packs
 SYSTEM_DEBLOAT+="$(find "$WORK_DIR/system" -type d -name "*TTSVoice*" | sed "s|$WORK_DIR/system/||g")"
