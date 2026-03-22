@@ -440,7 +440,7 @@ fi
 if [ ! "$IMAGE_SIZE" ]; then
     LOG_STEP_IN "! Partition size is not set, detecting minimum size"
 
-    if [[ "$FS_TYPE" == "erofs" ]]; then
+    if [[ "$FS_TYPE" == "erofs" && "$PARTITION" != "vendor" ]]; then
         BUILD_IMAGE_MKFS
         IMAGE_SIZE="$(GET_IMAGE_SIZE "$OUTPUT_FILE")"
     else
