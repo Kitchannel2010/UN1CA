@@ -129,7 +129,8 @@ BUILD_IMAGE_MKFS()
                 if $SPARSE; then
                     MANUAL_SPARSE=true
                 fi
-                ;;
+            fi
+            ;;
         "f2fs")
             BUILD_CMD+="mkf2fsuserimg "
             BUILD_CMD+="\"$OUTPUT_FILE\" \"$IMAGE_SIZE\" "
