@@ -445,6 +445,8 @@ if [ ! "$IMAGE_SIZE" ]; then
         IMAGE_SIZE="$(GET_IMAGE_SIZE "$OUTPUT_FILE")"
     else
         IMAGE_SIZE="$(GET_DISK_USAGE "$INPUT_DIR")"
+        IMAGE_SIZE=$(( IMAGE_SIZE + 268435456 ))
+        IMAGE_SIZE="$(ROUND_UP_TO_4K "$IMAGE_SIZE")"
     fi
 
     LOG "- The tree size of $(basename "$OUTPUT_FILE") is $IMAGE_SIZE bytes ($(bc -l <<< "scale=0; $IMAGE_SIZE / 1048576") MB)"
