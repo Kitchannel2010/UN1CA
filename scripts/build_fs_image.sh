@@ -77,25 +77,59 @@ BUILD_IMAGE_MKFS()
             fi
             ;;
         "erofs")
-            BUILD_CMD+="mkfs.erofs "
-            # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/core/Makefile#2084
-            BUILD_CMD+="-z \"lz4hc,9\" "
-            BUILD_CMD+="-b \"4096\" "
-            BUILD_CMD+="--mount-point \"$MOUNT_POINT\" "
-            BUILD_CMD+="--fs-config-file \"$FS_CONFIG_FILE\" "
-            BUILD_CMD+="--file-contexts \"$FILE_CONTEXT_FILE\" "
-            # Samsung uses a different default fixed timestamp for erofs/f2fs
-            BUILD_CMD+="-T \"1640995200\" "
-            if $MAP_FILE; then
-                BUILD_CMD+="--block-list-file \"${OUTPUT_FILE//.img/.map}\" "
-            fi
-            BUILD_CMD+="\"$OUTPUT_FILE\" \"$INPUT_DIR\""
+            if [[ "$PARTITION" == "vendor" ]]; then
+                    BUILD_CMD+="mkuserimg_mke2fs "
+                if $SPARSE; then
+                    BUILD_CMD+="-s "
+                fi
+                BUILD_CMD+="\"$INPUT_DIR\" \"$OUTPUT_FILE\" \"ext4\" \"$MOUNT_POINT\" "
+                BUILD_CMD+="\"$IMAGE_SIZE\" "
+                # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/build_image.py#808
+                BUILD_CMD+="-j \"0\" "
+                # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/build_image.py#49
+                BUILD_CMD+="-T \"1230735600\" "
+                BUILD_CMD+="-C \"$FS_CONFIG_FILE\" "
+                if $MAP_FILE; then
+                    BUILD_CMD+="-B \"${OUTPUT_FILE//.img/.map}\" "
+                fi
+                BUILD_CMD+="-L \"$MOUNT_POINT\" "
+                if [ "$INODES" ]; then
+                    BUILD_CMD+="-i \"$INODES\" "
+                fi
+                # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/build_image.py#808
+                BUILD_CMD+="-M \"0\" "
+                # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/build_image.py#331
+                BUILD_CMD+="--inode_size \"256\" "
+                BUILD_CMD+="\"$FILE_CONTEXT_FILE\""
 
-            # mkfs.erofs has no built-in sparse support
-            if $SPARSE; then
-                MANUAL_SPARSE=true
-            fi
-            ;;
+                # Avoid build failures if lost+found entry is not in file_context/fs_config
+                if ! grep -q -F "lost+found" "$FILE_CONTEXT_FILE"; then
+                    echo "/$PARTITION/lost\+found $(head -n 1 "$FILE_CONTEXT_FILE" | cut -f 2 -d " ")" >> "$FILE_CONTEXT_FILE"
+                fi
+
+                if ! grep -q -F "lost+found" "$FS_CONFIG_FILE"; then
+                    echo "$PARTITION/lost+found 0 0 700 capabilities=0x0" >> "$FS_CONFIG_FILE"
+                fi
+            else
+                BUILD_CMD+="mkfs.erofs "
+                # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/core/Makefile#2084
+                BUILD_CMD+="-z \"lz4hc,9\" "
+                BUILD_CMD+="-b \"4096\" "
+                BUILD_CMD+="--mount-point \"$MOUNT_POINT\" "
+                BUILD_CMD+="--fs-config-file \"$FS_CONFIG_FILE\" "
+                BUILD_CMD+="--file-contexts \"$FILE_CONTEXT_FILE\" "
+                # Samsung uses a different default fixed timestamp for erofs/f2fs
+                BUILD_CMD+="-T \"1640995200\" "
+                if $MAP_FILE; then
+                    BUILD_CMD+="--block-list-file \"${OUTPUT_FILE//.img/.map}\" "
+                fi
+                BUILD_CMD+="\"$OUTPUT_FILE\" \"$INPUT_DIR\""
+
+                # mkfs.erofs has no built-in sparse support
+                if $SPARSE; then
+                    MANUAL_SPARSE=true
+                fi
+                ;;
         "f2fs")
             BUILD_CMD+="mkf2fsuserimg "
             BUILD_CMD+="\"$OUTPUT_FILE\" \"$IMAGE_SIZE\" "
