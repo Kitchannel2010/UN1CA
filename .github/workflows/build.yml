@@ -21,6 +21,13 @@ jobs:
         target: [a71]
 
     steps:
+      - name: Check Swap Space
+        run: |
+          echo "=== Swap Status ==="
+          free -h
+          echo ""
+          echo "=== Detailed Swap Allocation ==="
+          swapon --show
       - name: Checkout repo
         uses: actions/checkout@v6
         with:
